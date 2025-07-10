@@ -121,8 +121,8 @@ func (jm *JobManager) AutoRegisterRegistryJobs() {
 			// Agregar job a MongoDB y al manager
 			newJob := models.Job{
 				ID:       jobID,
-				Message:  jobID, // puedes usar otro mensaje si quieres
-				Interval: 300,   // default 5 min (o cambiar por tabla/mapa si quieres)
+				Message:  jobID,
+				Interval: 300,
 			}
 			jm.AddJob(newJob)
 			fmt.Println("✅ Auto-registered job:", jobID)

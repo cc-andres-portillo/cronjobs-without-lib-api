@@ -66,6 +66,6 @@ func NotifyHotLeads() {
 			fmt.Println("❌ Error updating lead:", lead.ID, err)
 		}
 
-		// Agregar logs, historia y notificaciones si deseas
+		// Agregar logs, historia y notificaciones si se requiere
 	}
 }
