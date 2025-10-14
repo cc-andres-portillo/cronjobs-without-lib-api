@@ -1,14 +1,16 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 
+	"github.com/cc-andres-portillo/cronjobs-without-lib-api/db"
 	"github.com/cc-andres-portillo/cronjobs-without-lib-api/job"
 	"github.com/cc-andres-portillo/cronjobs-without-lib-api/models"
-
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func AddJobHandler(w http.ResponseWriter, r *http.Request) {
@@ -23,6 +25,24 @@ func AddJobHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Verificar si ya existe un job con el mismo mensaje + intervalo
+	filter := bson.M{
+		"message":  input.Message,
+		"interval": input.Interval,
+	}
+
+	count, err := db.CronjobsCollection.CountDocuments(context.TODO(), filter)
+	if err != nil {
+		http.Error(w, "Error checking existing jobs", http.StatusInternalServerError)
+		return
+	}
+
+	if count > 0 {
+		http.Error(w, "Job already exists with same message and interval", http.StatusConflict)
+		return
+	}
+
+	// Crear nuevo job
 	newJob := models.Job{
 		ID:       uuid.New().String(),
 		Message:  input.Message,
